@@ -1,0 +1,37 @@
+/* Modo de proyección: solo el equipo, a pantalla completa y sin deformarlo. */
+body[data-modo="proyeccion"] { background: #0D1218; overflow: hidden; height: 100vh; height: 100dvh; }
+body[data-modo="proyeccion"] .cabecera,
+body[data-modo="proyeccion"] .aviso-actualizacion,
+body[data-modo="proyeccion"] .estado-sim,
+body[data-modo="proyeccion"] .aviso,
+body[data-modo="proyeccion"] .controles,
+body[data-modo="proyeccion"] .pie { display: none !important; }
+body[data-modo="proyeccion"] .app { height: 100vh; height: 100dvh; min-height: 0; }
+body[data-modo="proyeccion"] .cuerpo { display: block; flex: 1; min-height: 0; }
+body[data-modo="proyeccion"] .escenario { padding: 0; gap: 0; height: 100%; justify-content: center; }
+body[data-modo="proyeccion"] .equipo { width: 100vw; height: calc(100vh - 22px); height: calc(100dvh - 22px); margin-bottom: 22px; }
+body[data-modo="proyeccion"] .equipo svg { width: 100%; height: 100%; max-height: none; }
+/* El aviso de límites sigue disponible para lectores de pantalla, pero no tapa el equipo. */
+body[data-modo="proyeccion"] .mensaje {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+body[data-modo="proyeccion"] .nota-desplegable {
+  position: fixed; left: 50%; bottom: calc(28px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  width: min(92vw, 900px); max-height: 34vh; overflow-y: auto; font-size: clamp(1rem, 2vw, 1.5rem);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .5); z-index: 5;
+}
+.proy-barra {
+  position: fixed; top: calc(8px + env(safe-area-inset-top)); right: calc(8px + env(safe-area-inset-right)); z-index: 10;
+  opacity: 0; transition: opacity .25s; pointer-events: none;
+}
+.proy-barra.visible, .proy-barra:focus-within { opacity: 1; pointer-events: auto; }
+.proy-pausa {
+  position: fixed; top: calc(8px + env(safe-area-inset-top)); left: calc(8px + env(safe-area-inset-left)); z-index: 10;
+  padding: 6px 14px; border-radius: 6px; font-weight: 700; letter-spacing: .08em;
+  background: #FFE81A; color: #101418; font-size: clamp(.9rem, 1.6vw, 1.4rem);
+}
+.proy-marca {
+  position: fixed; bottom: calc(4px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
+  font-size: .7rem; color: #8396A8; z-index: 1; pointer-events: none; white-space: nowrap;
+}
+body[data-modo="proyeccion"].cursor-oculto, body[data-modo="proyeccion"].cursor-oculto * { cursor: none; }

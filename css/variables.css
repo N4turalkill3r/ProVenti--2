@@ -1,0 +1,23 @@
+:root {
+  --color-fondo: #E9ECEF;
+  --color-superficie: #FFFFFF;
+  --color-texto: #1D2733;
+  --color-texto-suave: #5B6B7B;
+  --color-primario: #1F6FB2;
+  --color-oscuro: #12395C;
+  --color-aviso-fondo: #FFF4CC;
+  --color-aviso-borde: #E0B400;
+  --radio: 10px;
+  --gutter: 16px;
+  --alto-toque: 44px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-fondo: #11161C;
+    --color-superficie: #1B232C;
+    --color-texto: #E8EEF4;
+    --color-texto-suave: #9FB0C0;
+    --color-aviso-fondo: #3A3210;
+    --color-aviso-borde: #C99F00;
+  }
+}

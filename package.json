@@ -1,0 +1,10 @@
+{
+  "name": "prosventi-v2-simulador",
+  "version": "1.2.1",
+  "description": "Simulador educativo PWA de ventilador de transporte (Prosventi V-2.0)",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node tests/parameter-tests.js && node tests/render-tests.js && node tests/interaction-tests.js && node tests/engine-tests.js && node tests/indicators-tests.js && node tests/dynamics-tests.js && node tests/pwa-tests.js && node tests/validation-tests.js"
+  }
+}

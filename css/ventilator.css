@@ -1,0 +1,10 @@
+.equipo svg { width: 100%; height: auto; max-height: calc(100vh - 210px); max-height: calc(100dvh - 210px); user-select: none; -webkit-user-select: none; }
+.equipo svg text { pointer-events: none; }
+.equipo [data-tecla] { cursor: pointer; outline: none; }
+.equipo [data-tecla]:focus-visible { outline: 3px solid #FFE81A; outline-offset: 1px; }
+.equipo [data-perilla] { cursor: grab; touch-action: none; outline: none; }
+.equipo [data-perilla]:active { cursor: grabbing; }
+.equipo [data-perilla]:focus-visible { outline: 3px solid #1F6FB2; outline-offset: 2px; }
+@keyframes parpadeo { 50% { opacity: .25; } }
+.equipo .parpadeo { animation: parpadeo 1s steps(1, end) infinite; }
+@media (prefers-reduced-motion: reduce) { .equipo .parpadeo { animation: none; } }

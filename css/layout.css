@@ -1,0 +1,89 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+.app { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+.cabecera {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap;
+  padding: 8px max(var(--gutter), env(safe-area-inset-right)) 8px max(var(--gutter), env(safe-area-inset-left));
+  background: var(--color-superficie);
+  border-bottom: 1px solid rgba(0, 0, 0, .12);
+}
+.cabecera h1 { font-size: 1.05rem; color: var(--color-oscuro); }
+.cabecera p { font-size: .8rem; color: var(--color-texto-suave); }
+.cabecera-acciones { display: flex; gap: 8px; flex-shrink: 0; }
+@media (prefers-color-scheme: dark) { .cabecera h1 { color: #CFE3F7; } }
+.aviso {
+  margin: 8px var(--gutter) 0;
+  padding: 6px 12px;
+  background: var(--color-aviso-fondo);
+  border-left: 4px solid var(--color-aviso-borde);
+  border-radius: 4px;
+  font-size: .8rem;
+}
+.cuerpo { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; }
+.escenario {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px;
+  padding: 8px max(var(--gutter), env(safe-area-inset-right)) 12px max(var(--gutter), env(safe-area-inset-left));
+  min-width: 0;
+}
+.equipo { width: min(100%, 1100px); }
+.pie { padding: 8px var(--gutter) 14px; font-size: .75rem; color: var(--color-texto-suave); text-align: center; }
+
+/* Cajón de controles: en pantallas anchas ocupa una columna lateral y el equipo se reduce, sin taparlo. */
+.controles {
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 8px var(--gutter) 16px;
+  min-width: 0;
+}
+@media (min-width: 1000px) {
+  body[data-controles="abierto"] .cuerpo { grid-template-columns: minmax(0, 1fr) 380px; }
+  body[data-controles="abierto"] .controles {
+    position: sticky; top: 0; max-height: 100vh; max-height: 100dvh; overflow-y: auto;
+    border-left: 1px solid rgba(0, 0, 0, .12); background: var(--color-superficie);
+  }
+}
+
+/* Barra de estado */
+.estado-sim {
+  list-style: none; margin: 0; padding: 6px var(--gutter) 0;
+  display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+}
+.estado-sim li {
+  font-size: .75rem; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+  border: 1px solid transparent;
+}
+.estado-sim li[data-nivel="ok"] { background: #DDF3E2; color: #12582A; border-color: #9BD3A8; }
+.estado-sim li[data-nivel="neutro"] { background: #E6EAEE; color: #3B4754; border-color: #C2CBD3; }
+.estado-sim li[data-nivel="aviso"] { background: #FFF1C2; color: #6B4E00; border-color: #E0B400; }
+.estado-sim li[data-nivel="alarma"] { background: #FBD9DB; color: #8A0F17; border-color: #E5232B; }
+@media (prefers-color-scheme: dark) {
+  .estado-sim li[data-nivel="ok"] { background: #12331D; color: #A7E3B6; border-color: #2F7A45; }
+  .estado-sim li[data-nivel="neutro"] { background: #26303A; color: #C4D0DB; border-color: #43515F; }
+  .estado-sim li[data-nivel="aviso"] { background: #3A3210; color: #F3DC84; border-color: #C99F00; }
+  .estado-sim li[data-nivel="alarma"] { background: #4A1418; color: #FFB4B8; border-color: #E5232B; }
+}
+
+.fallo-inicio { margin: 24px auto; max-width: 640px; padding: 16px 20px; background: #fff3cd; color: #3d2f00; border: 2px solid #b58900; border-radius: 8px; }
+.fallo-inicio[hidden] { display: none; }
+.fallo-inicio h2 { margin: 0 0 8px; font-size: 1.1rem; }
+
+/* Motivos de las alarmas activas */
+.motivos-alarma { list-style: none; margin: 0; padding: 6px var(--gutter) 0; display: flex; flex-direction: column; gap: 4px; align-items: center; }
+.motivos-alarma:empty { display: none; }
+.motivos-alarma li {
+  display: flex; align-items: flex-start; gap: 8px; max-width: 46rem; width: 100%;
+  background: #FBD9DB; color: #8A0F17; border: 1px solid #E5232B; border-radius: 10px; padding: 6px 10px; font-size: .85rem;
+}
+.motivos-alarma .luz { flex: none; width: 12px; height: 12px; margin-top: 3px; border-radius: 50%; background: #E5232B; animation: luz-alarma 1s steps(1, end) infinite; }
+.motivos-alarma .causa { display: block; font-weight: 400; font-size: .78rem; }
+.motivos-alarma b { font-weight: 700; }
+@keyframes luz-alarma { 50% { opacity: .2; } }
+@media (prefers-reduced-motion: reduce) { .motivos-alarma .luz { animation: none; } }
+@media (prefers-color-scheme: dark) {
+  .motivos-alarma li { background: #4A1418; color: #FFB4B8; }
+}

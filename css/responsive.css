@@ -1,0 +1,34 @@
+/* Teléfonos en vertical */
+@media (max-width: 600px) {
+  .cabecera p { display: none; }
+  .cabecera-acciones { width: 100%; }
+  .cabecera-acciones .btn-icono { flex: 1 1 0; padding: 0 6px; font-size: .82rem; }
+  .vistas button { padding: 0 10px; font-size: .85rem; }
+  .equipo svg { max-height: none; }
+  .aviso { font-size: .75rem; }
+  .pista-movil { display: block; }
+  .acciones-equipo button { flex: 1 1 40%; }
+  .panel-instructor { width: 100%; }
+}
+
+/* Tabletas */
+@media (min-width: 601px) and (max-width: 999px) {
+  .controles { max-width: 720px; width: 100%; margin: 0 auto; }
+}
+
+/* Teléfonos en horizontal: poco alto. El equipo ocupa la altura y el cajón va a un lado. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .aviso, .pie, .cabecera p, .pista-movil { display: none; }
+  .cabecera { padding-top: 4px; padding-bottom: 4px; flex-wrap: nowrap; }
+  .cabecera-acciones .btn-icono { min-height: 38px; }
+  .estado-sim { padding-top: 3px; }
+  .estado-sim li { font-size: .7rem; padding: 1px 8px; }
+  .escenario { padding-top: 4px; padding-bottom: 4px; gap: 2px; }
+  .equipo svg { max-height: calc(100dvh - 100px); }
+  body[data-controles="abierto"] .cuerpo { grid-template-columns: minmax(0, 1fr) minmax(300px, 40%); }
+  body[data-controles="abierto"] .controles {
+    position: sticky; top: 0; max-height: calc(100dvh - 90px); overflow-y: auto;
+    border-left: 1px solid rgba(0, 0, 0, .12); background: var(--color-superficie);
+  }
+  .cuerpo { min-height: 0; }
+}

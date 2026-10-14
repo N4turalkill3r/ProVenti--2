@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Prosventi V-2.0 · Simulador educativo</title>
+  <meta name="description" content="Simulador educativo de ventilador mecánico de transporte para entrenamiento del personal médico.">
+  <meta name="theme-color" content="#12395C">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Prosventi">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/ventilator.css">
+  <link rel="stylesheet" href="css/controls.css">
+  <link rel="stylesheet" href="css/projection.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body data-modo="control">
+  <div class="app" id="app">
+    <header class="cabecera">
+      <div class="cabecera-titulo">
+        <h1 id="marca">Prosventi V-2.0</h1>
+        <p>Simulador educativo de ventilador de transporte</p>
+      </div>
+      <div class="cabecera-acciones">
+        <button type="button" id="btn-encuadre" class="btn-icono" aria-pressed="false" title="Ampliar la pantalla del equipo (tecla Z)">Ampliar pantalla</button>
+        <button type="button" id="btn-controles" class="btn-icono" aria-expanded="false" aria-controls="controles">Controles</button>
+        <button type="button" id="btn-proyeccion" class="btn-icono" title="Proyección (tecla P)">Proyección</button>
+      </div>
+    </header>
+
+    <div class="aviso-actualizacion" id="aviso-actualizacion" role="status" hidden>
+      <span>Hay una versión nueva del simulador. Al actualizar se reinicia la simulación.</span>
+      <button type="button" id="btn-actualizar" class="btn-icono">Actualizar ahora</button>
+      <button type="button" id="btn-actualizar-luego" class="btn-icono">Más tarde</button>
+    </div>
+
+    <ul class="estado-sim" id="estado-sim" aria-label="Estado de la simulación"></ul>
+    <ul class="motivos-alarma" id="motivos-alarma" aria-label="Motivo de las alarmas activas" aria-live="polite"></ul>
+
+    <p class="aviso" id="aviso" role="note"></p>
+
+    <div class="cuerpo">
+      <main class="escenario" id="escenario">
+        <div class="equipo" id="ventilador"></div>
+        <p class="mensaje" id="mensaje" role="status" aria-live="polite"></p>
+        <p class="pista-movil" id="pista-movil">Toque las teclas de la pantalla. Use «Ampliar pantalla» para leerla mejor o gire el teléfono.</p>
+
+        <section class="nota-desplegable" id="nota-suspiro" role="region" aria-labelledby="nota-suspiro-titulo" hidden>
+          <div class="nota-cabecera">
+            <h2 id="nota-suspiro-titulo"></h2>
+            <button type="button" id="btn-cerrar-nota" class="btn-icono">Cerrar</button>
+          </div>
+          <p id="nota-suspiro-texto"></p>
+          <p id="nota-suspiro-simulador"></p>
+        </section>
+      </main>
+
+      <aside class="controles" id="controles" aria-label="Controles del simulador" hidden>
+        <div class="acciones-equipo">
+          <button type="button" id="btn-encendido" class="btn-principal" aria-pressed="true">Apagar</button>
+          <button type="button" id="btn-pausa" aria-pressed="false">Pausar</button>
+          <button type="button" id="btn-reiniciar">Reiniciar</button>
+          <button type="button" id="btn-sonido" aria-pressed="true">Sonido: sí</button>
+        </div>
+
+        <details class="panel-instructor" id="panel-perillas">
+          <summary>Perillas (alternativa táctil)</summary>
+          <p class="panel-ayuda">Mueven las mismas perillas del equipo. También puede arrastrar la perilla dibujada o usar el teclado.</p>
+          <div class="deslizadores" id="deslizadores">
+            <label><span class="fila-valor">PRES MÁX <output data-salida="presionMaxima"></output> cmH2O</span>
+              <input type="range" name="presionMaxima" min="0" max="80" step="1"></label>
+            <label><span class="fila-valor">PEEP <output data-salida="peep"></output> cmH2O</span>
+              <input type="range" name="peep" min="0" max="20" step="1"></label>
+            <label><span class="fila-valor">FLUJO <output data-salida="flujo"></output> L/min</span>
+              <input type="range" name="flujo" min="1" max="50" step="1"></label>
+            <label><span class="fila-valor">O₂ (mezclador) <output data-salida="o2"></output> %</span>
+              <input type="range" name="o2" min="21" max="100" step="1"></label>
+          </div>
+        </details>
+
+        <details class="panel-instructor" id="panel-instructor" open>
+          <summary>Valores y condiciones (instructor)</summary>
+          <p class="panel-ayuda">Fije los valores que mide el equipo y las condiciones del sistema. La PICO sigue a la perilla PRES MÁX y el VCE resulta de la fórmula VC = 17 ml × PICO (si cambia uno, se recalcula el otro). La PEEP sigue a su perilla. Las alarmas se activan solas cuando un valor medido o programado sale de los límites de ALARMA1 o ALARMA2 y se indica el motivo. DISP. FLUJO (necesita neumotacógrafo) no genera alarmas ni cambia otras funciones.</p>
+          <form id="form-medidos" class="panel-rejilla" autocomplete="off">
+            <label>Presión pico (cmH2O)<input type="number" name="pico" step="1" inputmode="decimal"></label>
+            <label>PEEP (cmH2O)<input type="number" name="peep" step="1" inputmode="decimal"></label>
+            <label>Frecuencia (rpm)<input type="number" name="frecuencia" step="1" inputmode="decimal"></label>
+            <label>Presión media (cmH2O)<input type="number" name="media" step="1" inputmode="decimal"></label>
+            <label>Oxígeno (%)<input type="number" name="o2" step="1" inputmode="decimal"></label>
+            <label>VCE (ml)<input type="number" name="vce" step="10" inputmode="decimal"></label>
+            <label>VME (L)<input type="number" name="vme" step="0.1" inputmode="decimal"></label>
+          </form>
+          <div class="panel-rejilla" id="form-vme" aria-label="Alarma de VME">
+            <label class="casilla"><input type="checkbox" name="vmeActiva"> Alarma de VME activa (desmarcar la silencia)</label>
+            <label>VME límite bajo (L)<input type="number" name="vmeLow" step="1" inputmode="numeric"></label>
+            <label>VME límite alto (L)<input type="number" name="vmeHigh" step="1" inputmode="numeric"></label>
+          </div>
+          <div class="panel-rejilla" id="form-sistema">
+            <label>Fuente de energía
+              <select name="fuente"><option value="externa">Externa</option><option value="bateria">Batería</option></select>
+            </label>
+            <label>Carga de batería (%)<input type="number" name="bateriaPct" min="0" max="100" step="1" inputmode="numeric"></label>
+            <label>Neumotacógrafo
+              <select name="neumotaco"><option value="ninguno">Ninguno</option><option value="infantil">Infantil</option><option value="pediatrico">Pediátrico</option></select>
+            </label>
+            <label class="casilla"><input type="checkbox" name="gasBajo"> Baja presión de suministro de gas</label>
+            <label>Fallo del ventilador
+              <select name="fallo" id="sel-fallo"><option value="">Ninguno</option></select>
+            </label>
+          </div>
+          <p class="panel-error" id="panel-error" role="alert"></p>
+        </details>
+
+        <details class="panel-instructor">
+          <summary>Escenarios de prueba</summary>
+          <p class="panel-ayuda">Cargan una pantalla de ejemplo y reinician los ajustes.</p>
+          <nav class="vistas" id="vistas" aria-label="Escenarios de prueba"></nav>
+        </details>
+
+        <details class="panel-instructor" id="panel-app">
+          <summary>Aplicación y sin conexión</summary>
+          <dl class="datos-app" id="datos-app">
+            <dt>Versión</dt><dd id="app-version"></dd>
+            <dt>Conexión</dt><dd id="app-conexion"></dd>
+            <dt>Uso sin conexión</dt><dd id="app-offline"></dd>
+            <dt>Instalada</dt><dd id="app-instalada"></dd>
+          </dl>
+          <div class="acciones-equipo">
+            <button type="button" id="btn-instalar" hidden>Instalar aplicación</button>
+            <button type="button" id="btn-buscar-actualizacion">Buscar actualización</button>
+            <button type="button" id="btn-borrar-datos">Borrar datos guardados</button>
+          </div>
+          <p class="panel-ayuda" id="app-instalar-ayuda">Si el navegador no ofrece el botón de instalar: en iPhone o iPad use Compartir → Añadir a pantalla de inicio; en Chrome o Edge, el icono de instalar de la barra de direcciones o el menú.</p>
+          <p class="panel-ayuda"><strong>Datos guardados:</strong> este simulador guarda en este dispositivo solo sus preferencias de pantalla (controles abiertos y encuadre) y una copia de los archivos de la aplicación para usarla sin conexión. No guarda datos clínicos ni personales, y la simulación no se conserva al cerrar o actualizar.</p>
+        </details>
+
+        <p class="panel-ayuda">Atajos: <kbd>P</kbd> proyección, <kbd>C</kbd> controles, <kbd>Z</kbd> ampliar pantalla, <kbd>Esc</kbd> salir de la proyección.</p>
+      </aside>
+    </div>
+
+    <footer class="pie">
+      <noscript>Esta aplicación necesita JavaScript.</noscript>
+      Las alarmas y los valores son simulados. No usar para tratar pacientes.
+    </footer>
+  </div>
+
+  <!-- Elementos de la proyección: solo se ven en ese modo -->
+  <div class="proy-barra" id="proy-barra" hidden>
+    <button type="button" id="btn-encuadre-proy" class="btn-icono" aria-pressed="false">Ampliar pantalla (Z)</button>
+    <button type="button" id="btn-salir-proyeccion" class="btn-icono">Salir de la proyección (Esc)</button>
+  </div>
+  <p class="proy-pausa" id="proy-pausa" hidden>EN PAUSA</p>
+  <p class="proy-marca" id="proy-marca" hidden>Simulador educativo · Prosventi V-2.0</p>
+
+  <div class="fallo-inicio" id="fallo-inicio" role="alert" hidden>
+    <h2>El simulador no pudo iniciar</h2>
+    <p id="fallo-inicio-causa"></p>
+    <p>Si ya lo abrió desde un servidor y sigue igual, presione F12, abra la pestaña «Console» y revise el mensaje en rojo.</p>
+  </div>
+  <script>
+    // Aviso si la aplicación no arranca (por ejemplo, abierta con doble clic como archivo en lugar de desde un servidor).
+    (function () {
+      var causa = location.protocol === 'file:'
+        ? 'Abrió el archivo directamente (dirección file://). Los navegadores bloquean así los módulos de la aplicación. Ábralo desde un servidor: en Visual Studio Code, clic derecho en index.html → «Open with Live Server», o ejecute «python3 -m http.server 8000» y abra http://localhost:8000.'
+        : 'Falta algún archivo (carpetas css, js o icons) o hay un error en la página. Compruebe que index.html esté junto a las carpetas css, js e icons.';
+      function revisar() {
+        if (window.__prosventi) return;
+        document.getElementById('fallo-inicio-causa').textContent = causa;
+        document.getElementById('fallo-inicio').hidden = false;
+      }
+      if (location.protocol === 'file:') revisar(); else setTimeout(revisar, 4000);
+    })();
+  </script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
